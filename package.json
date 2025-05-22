@@ -1,0 +1,37 @@
+{
+  "name": "lg-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build --dotenv .env.prod",
+    "dev": "nuxi dev",
+    "test": "nuxi dev --envName test",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^1.1.4",
+    "@nuxt/fonts": "^0.11.4",
+    "@nuxt/icon": "^1.13.0",
+    "@nuxt/ui": "^3.1.2",
+    "@vue-flow/core": "^1.44.0",
+    "nuxt": "^3.17.4",
+    "zod": "^3.25.20"
+  },
+  "devDependencies": {
+    "@iconify-json/flag": "^1.2.5",
+    "@iconify-json/lucide": "^1.2.44",
+    "@iconify-json/simple-icons": "^1.2.35",
+    "@iconify-json/tabler": "^1.2.18",
+    "@nuxt/eslint": "^1.4.1",
+    "eslint": "^9.27.0",
+    "typescript": "^5.8.3"
+  },
+  "trustedDependencies": [
+    "@parcel/watcher"
+  ],
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
+}
