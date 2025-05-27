@@ -3,8 +3,10 @@
 </template>
 
 <script setup lang="ts">
-
+import { h } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
+
+const IpAddressInfoTooltip = resolveComponent('IpAddressInfoTooltip')
 
 const { results } = defineProps<{ results: TracerouteHop[] }>()
 
@@ -20,6 +22,17 @@ const columns: TableColumn<TracerouteHop>[] = [
   {
     accessorKey: 'fqdn',
     header: 'FQDN',
+  },
+  {
+    accessorKey: 'info',
+    header: 'Origin ASN',
+    cell: ({ row }) => {
+      const info = row.getValue('info')
+      if (info && info.asn) {
+        return h(IpAddressInfoTooltip, { ipinfo: info })
+      }
+      return ""
+    },
   },
   {
     accessorKey: 'rtt',

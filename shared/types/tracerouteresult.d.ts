@@ -9,9 +9,17 @@ export interface TracerouteData {
     hops: TracerouteHop[];
 }
 
+export interface IPAddressInfo {
+    asn?: string 
+    bgp_prefix?: string 
+    as_name?: str 
+    registry?: str
+}
+
 export interface TracerouteHop {
     hop_number?: string
     ip_address?: string
     rtt?: string
     fqdn?: string
+    info?: IPAddressInfo
 }
