@@ -16,10 +16,10 @@
           <div v-if="ipinfo.as_name" class="text-muted">{{ ipinfo.as_name }}</div>
 
           <div v-if="ipinfo.bgp_prefix" class="font-medium">BGP Prefix</div>
-          <div v-if="ipinfo.bgp_prefix" class="text-muted">#{{ ipinfo.bgp_prefix }}</div>
+          <div v-if="ipinfo.bgp_prefix" class="text-muted">{{ ipinfo.bgp_prefix }}</div>
 
           <div v-if="ipinfo.registry" class="font-medium">Registry</div>
-          <div v-if="ipinfo.registry" class="text-muted">#{{ ipinfo.registry }}</div>
+          <div v-if="ipinfo.registry" class="text-muted">{{ ipinfo.registry.toUpperCase() }}</div>
         </div>
       </UCard>
     </template>

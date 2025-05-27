@@ -28,10 +28,7 @@ const columns: TableColumn<TracerouteHop>[] = [
     header: 'Origin ASN',
     cell: ({ row }) => {
       const info = row.getValue('info')
-      if (info && info.asn) {
-        return h(IpAddressInfoTooltip, { ipinfo: info })
-      }
-      return ""
+      return info?.asn ? h(IpAddressInfoTooltip, { ipinfo: info }) : ''
     },
   },
   {
