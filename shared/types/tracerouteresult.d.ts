@@ -14,6 +14,7 @@ export interface IPAddressInfo {
     bgp_prefix?: string 
     as_name?: str 
     registry?: str
+    as_cc?: str
 }
 
 export interface TracerouteHop {

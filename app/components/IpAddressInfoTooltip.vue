@@ -5,7 +5,10 @@
       <UCard variant="subtle">
         <template #header>
           <div class="flex">
-            <div>{{ ipinfo.asn }}</div>
+            <div v-if="ipinfo.as_cc" class="me-3">
+              <UIcon :name="`i-flag-${ipinfo.as_cc?.toLowerCase()}-4x3`" />
+            </div>
+            <div>AS{{ ipinfo.asn }}</div>
           </div>
         </template>
         <div class="grid grid-cols-2 gap-2 max-w-2xs">
