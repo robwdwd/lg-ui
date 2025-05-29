@@ -1,7 +1,5 @@
 <template>
-  <UPopover mode="hover"     :content="{
-      side: 'top'
-    }">
+  <UPopover mode="hover" :content="{ side: 'top' }">
     <div class="underline">AS{{ ipinfo.asn }}</div>
     <template #content>
       <UCard variant="subtle">
@@ -32,15 +30,11 @@
 </template>
 
 <script setup lang="ts">
-
 import type { IPAddressInfo } from '~~/shared/types/tracerouteresult';
 
 const { ipinfo } = defineProps<{ ipinfo: IPAddressInfo }>()
 
-
-
 const registryUpper = computed(() =>
   ipinfo.registry ? ipinfo.registry.toUpperCase() : ''
 )
-
 </script>
