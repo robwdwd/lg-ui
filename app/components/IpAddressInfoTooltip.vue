@@ -1,5 +1,7 @@
 <template>
-  <UPopover mode="hover">
+  <UPopover mode="hover"     :content="{
+      side: 'top'
+    }">
     <div class="underline">AS{{ ipinfo.asn }}</div>
     <template #content>
       <UCard variant="subtle">
