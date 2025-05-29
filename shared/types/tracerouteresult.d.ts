@@ -1,7 +1,7 @@
 import type { ASNInfoEntry } from "./bgpresult";
 import type { Result } from "./results";
 
-export interface TracerouteResult extends Result{
+export interface TracerouteResult extends Result {
     parsed_output: TracerouteData[];
 }
 
@@ -11,11 +11,10 @@ export interface TracerouteData {
 }
 
 export interface IPAddressInfo {
-    asn?: string 
-    bgp_prefix?: string 
-    asrank?: ASNInfoEntry 
+    asn?: string
+    asrank?: ASNInfoEntry
+    bgp_prefix?: string
     registry?: str
-    as_cc?: str
 }
 
 export interface TracerouteHop {

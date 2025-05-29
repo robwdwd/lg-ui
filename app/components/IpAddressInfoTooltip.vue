@@ -1,19 +1,14 @@
 <template>
-  <UPopover mode="hover" arrow>
-    <div>AS{{ ipinfo.asn }}</div>
+  <UPopover mode="hover">
+    <div class="underline">AS{{ ipinfo.asn }}</div>
     <template #content>
       <UCard variant="subtle">
-        <template #header>
-          <div class="flex">
-            <div v-if="ipinfo.as_cc" class="me-3">
-              <UIcon :name="`i-flag-${ipinfo.as_cc.toLowerCase()}-4x3`" />
-            </div>
-            <div>AS{{ ipinfo.asn }}</div>
-          </div>
-        </template>
         <div class="grid grid-cols-2 gap-2 max-w-2xs">
-          <div v-if="displayName" class="font-medium">AS Name</div>
-          <div v-if="displayName" class="text-muted">{{ displayName }}</div>
+          <div v-if="ipinfo.asrank?.asnName" class="font-medium">AS Name</div>
+          <div v-if="ipinfo.asrank?.asnName" class="text-muted">{{ ipinfo.asrank.asnName }}</div>
+
+          <div v-if="ipinfo.asrank?.organization?.orgName" class="font-medium">Organisation</div>
+          <div v-if="ipinfo.asrank?.organization?.orgName" class="text-muted">{{ ipinfo.asrank.organization.orgName }}</div>
 
           <div v-if="ipinfo.asrank?.country?.name" class="font-medium">AS Country</div>
           <div v-if="ipinfo.asrank?.country?.name" class="text-muted">
@@ -40,9 +35,7 @@ import type { IPAddressInfo } from '~~/shared/types/tracerouteresult';
 
 const { ipinfo } = defineProps<{ ipinfo: IPAddressInfo }>()
 
-const displayName = computed(() =>
-  ipinfo.asrank?.organization?.orgName || ipinfo.asrank?.asnName || ''
-)
+
 
 const registryUpper = computed(() =>
   ipinfo.registry ? ipinfo.registry.toUpperCase() : ''
