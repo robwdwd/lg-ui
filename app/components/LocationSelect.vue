@@ -1,6 +1,6 @@
 <template>
   <UFormField label="Location" name="location">
-    <USelect v-model="model" :items="locations" :multiple="multiple" :loading="location_status !== 'success'" :disabled="location_status !== 'success'"
+    <USelect size="xl" v-model="model" :items="locations" :multiple="multiple" :loading="location_status !== 'success'" :disabled="location_status !== 'success'"
       placeholder="Select location" class="w-full lg:w-72" />
   </UFormField>
 </template>

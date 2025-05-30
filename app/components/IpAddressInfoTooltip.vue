@@ -1,6 +1,6 @@
 <template>
-  <UPopover mode="hover" :content="{ side: 'top' }">
-    <div class="underline">AS{{ ipinfo.asn }}</div>
+  <UPopover>
+    <UButton :label="`AS${ipinfo.asn}`" color="neutral" variant="link" icon="i-tabler-info-circle" />
     <template #content>
       <UCard variant="subtle">
         <div class="grid grid-cols-2 gap-2 max-w-2xs">

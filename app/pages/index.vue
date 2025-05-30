@@ -6,14 +6,14 @@
           <LocationSelect v-model="state.location" />
 
           <UFormField label="Command" name="command">
-            <USelect v-model="state.command" :items="command_labels" placeholder="Select Command" class="w-full lg:w-72" />
+            <USelect size="xl" v-model="state.command" :items="command_labels" placeholder="Select Command" class="w-full lg:w-72" />
           </UFormField>
 
-          <UFormField label="Destination" name="destination">
+          <UFormField label="Destination" name="destination" size="xl">
             <UInput v-model="state.destination" class="w-full lg:w-72" />
           </UFormField>
 
-          <UButton type="submit" class="block w-full lg:w-72">
+          <UButton size="xl" type="submit" class="block w-full lg:w-72">
             Submit
           </UButton>
         </UForm>
