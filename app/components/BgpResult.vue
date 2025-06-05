@@ -21,18 +21,18 @@
     </template>
 
     <div v-if="showRawOutput" class="p-3 mb-3">
-      <pre>{{ results.raw_output }}</pre>
+      <pre class="text-xs md:text-sm lg:text-base"><code>{{ results.raw_output }}</code></pre>
     </div>
     <div v-else>
       <UTabs v-if="hasMultipleParsedOutputs" :items="tabItems" variant="pill" size="sm" color="neutral" class="w-full">
         <template v-for="(parsedResult, index) in results.parsed_output" #[index]="{ item }">
-          <BgpPrefixHeader :prefix="parsedResult.prefix" :as-paths="parsedResult.as_paths" :as-info="parsedResult.asn_info"/>
+          <BgpPrefixHeader :prefix="parsedResult.prefix" :as-paths="parsedResult.as_paths" :as-info="parsedResult.asn_info" />
           <BgpPathTable :results="parsedResult.paths" />
         </template>
       </UTabs>
 
       <div v-else v-for="parsedResult in results.parsed_output">
-        <BgpPrefixHeader :prefix="parsedResult.prefix" :as-paths="parsedResult.as_paths" :as-info="parsedResult.asn_info"/>
+        <BgpPrefixHeader :prefix="parsedResult.prefix" :as-paths="parsedResult.as_paths" :as-info="parsedResult.asn_info" />
         <BgpPathTable :results="parsedResult.paths" />
       </div>
     </div>

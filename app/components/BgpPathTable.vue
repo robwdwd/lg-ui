@@ -1,5 +1,5 @@
 <template>
-      <UTable :data="results" :columns="columns" />
+  <UTable :data="results" :columns="columns" />
 </template>
 
 <script setup lang="ts">

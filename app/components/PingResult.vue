@@ -21,7 +21,7 @@
     </template>
 
     <div v-if="showRawOutput" class="p-3 mb-3">
-      <pre>{{ results.raw_output }}</pre>
+      <pre class="text-xs md:text-sm lg:text-base"><code>{{ results.raw_output }}</code></pre>
     </div>
 
     <PingTable v-else :results="results.parsed_output" />
