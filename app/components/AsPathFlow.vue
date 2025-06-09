@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <UModal title="AS Path Flow" :description="`AS paths flows seen to ${prefix}`" @update:open="toggleModelState">
+    <UModal title="AS Path Flow" :description="`AS paths flows seen to ${prefix}`" @update:open="toggleModelState" @after:enter="onAfterEnter">
       <UTooltip text="View AS path diagram.">
         <UButton icon="i-tabler-route-square-2" color="neutral" variant="ghost" class="float-right" />
       </UTooltip>
@@ -97,17 +97,13 @@ async function toggleModelState(event: boolean) {
       parsePaths(asPaths, config.public.ourAsn, asInfo);
       hasParsedPaths.value = true;
     }
-
-    // Workaround to fix issue with connectors/edges after transition has finished
-    //
-    setTimeout(() => updateNodeInternals(), 250)
   }
   isModalOpen.value = event;
 }
 
-// async function onAfterEnter() {
-//   updateNodeInternals()
-// }
+async function onAfterEnter() {
+  updateNodeInternals()
+}
 
 // Layout the graph and fit the view
 async function layoutGraph(): Promise<void> {
