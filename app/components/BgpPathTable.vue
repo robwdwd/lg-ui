@@ -3,8 +3,6 @@
 </template>
 
 <script setup lang="ts">
-
-import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 
 const { results } = defineProps<{ results: BgpPath[] }>()
@@ -30,16 +28,21 @@ const columns: TableColumn<BgpPath>[] = [
             h(UButton, { variant: 'subtle', color: 'success' }, () => 'Best'),
           ]
         )
-      } else {
-        return h('span', { class: 'font-medium' }, String(pathId))
       }
+      return h('span', { class: 'font-medium' }, String(pathId))
     },
   },
   {
     accessorKey: 'as_path',
     header: 'AS Path',
-    cell: ({ row }) =>
-      h('div', { class: 'text-right font-medium' }, row.getValue('as_path').join(' ')),
+    cell: ({ row }) => {
+      const asPath = row.getValue('as_path') as number[] | undefined
+
+      if (!asPath || asPath.length === 0) {
+        return null
+      }
+      return h('div', { class: 'text-right font-medium' }, asPath.join(' '))
+    },
   },
   {
     accessorKey: 'next_hop',
@@ -57,7 +60,12 @@ const columns: TableColumn<BgpPath>[] = [
     accessorKey: 'communities',
     header: 'Communities',
     cell: ({ row }) => {
-      const communities = row.getValue('communities')
+      const communities = row.getValue('communities') as Array<{ community: string; description?: string }> | undefined
+
+      if (!communities || communities.length === 0) {
+        return null
+      }
+
       return h(
         'div',
         { class: 'flex flex-wrap' },

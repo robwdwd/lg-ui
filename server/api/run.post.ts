@@ -1,8 +1,7 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
 
-  const body = await readBody(event);
-  const { command, location, destination, timeout }: ApiPostBody = await readBody(event);
+  const { command: command, location: location, destination: destination, timeout: timeout }: ApiPostBody = await readBody(event);
 
   // Validate required fields
   if (!command || !location || !destination || !timeout) {

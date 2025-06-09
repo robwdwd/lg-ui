@@ -40,7 +40,7 @@ const results = ref<Result | null>(null);
 // Track the command seperatly from state of the form as if the user
 // changes the command select when viewing existing results it does bad things
 //
-const lgCommand = ref<string | undefined>();
+const lgCommand = ref<CommandTypes | undefined>();
 
 const command_labels = [
   { label: 'BGP Route', value: CommandTypes.BGP },
@@ -86,13 +86,16 @@ function getResultComponent(command: CommandTypes | undefined) {
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   results.value = null;
-  lgCommand.value = event.data.command;
+
+  const command = event.data.command as CommandTypes
+
+  lgCommand.value = command;
 
   const response = await fetchResults<Result>('/api/run/', {
-    command: event.data.command,
+    command: command,
     location: event.data.location,
     destination: event.data.destination,
-    timeout: API_TIMEOUT[event.data.command],
+    timeout: API_TIMEOUT[command],
   });
 
   if (response) {

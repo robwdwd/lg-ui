@@ -1,12 +1,12 @@
 <template>
   <ClientOnly>
-    <UModal title="AS Path Flow" :description="`AS paths flows seen to ${prefix}`" @update:open="toggleModelState" @after:enter="onAfterEnter">
+    <UModal title="AS Path Flow" :description="`AS paths flows seen to ${prefix}`" @update:open="toggleModalState" @after:enter="onAfterEnter">
       <UTooltip text="View AS path diagram.">
         <UButton icon="i-tabler-route-square-2" color="neutral" variant="ghost" class="float-right" />
       </UTooltip>
       <template #body>
         <div class="relative w-full h-[75vh]">
-          <VueFlow v-if="isModalOpen" :nodes="nodes" :edges="edges" :nodes-connectable="nodesConnectable" @nodes-initialized="layoutGraph" />
+          <VueFlow v-if="isModalOpen" :nodes="nodes" :edges="edges" :nodes-connectable="false" @nodes-initialized="layoutGraph" />
         </div>
       </template>
     </UModal>
@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
 import { useVueFlow, type Edge, type Node } from '@vue-flow/core'
 import type { ASNInfo, ASNInfoEntry } from '~~/shared/types/bgpresult';
 
@@ -30,7 +29,6 @@ const config = useRuntimeConfig();
 const { layout } = useLayout();
 const { fitView, updateNodeInternals } = useVueFlow();
 
-const nodesConnectable = ref(false)
 const isModalOpen = ref(false)
 const hasParsedPaths = ref(false); // Flag to track if paths have been parsed
 
@@ -41,7 +39,7 @@ const NODE_STYLE = {
   background: 'var(--ui-bg-accented)',
   border: '1px solid var(--ui-color-neutral-400)',
   color: 'var(--ui-text-toned)',
-};
+} as const;
 
 const makeNodeLabel = (id: number, asInfo?: ASNInfoEntry) =>
   asInfo ? h(AsNodeTooltip, { asn: id, asInfo }) : `AS${id}`;
@@ -91,14 +89,12 @@ const parsePaths = (paths: number[][], rootNode: number, asInfo?: ASNInfo): void
   edges.value = newEdges;
 };
 
-async function toggleModelState(event: boolean) {
-  if (event) {
-    if (!hasParsedPaths.value) {
-      parsePaths(asPaths, config.public.ourAsn, asInfo);
-      hasParsedPaths.value = true;
-    }
+const toggleModalState = (event: boolean): void => {
+  if (event && !hasParsedPaths.value) {
+    parsePaths(asPaths, config.public.ourAsn, asInfo)
+    hasParsedPaths.value = true
   }
-  isModalOpen.value = event;
+  isModalOpen.value = event
 }
 
 async function onAfterEnter() {

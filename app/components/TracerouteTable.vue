@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
+
 import type { TableColumn } from '@nuxt/ui'
 
 const IpAddressInfoTooltip = resolveComponent('IpAddressInfoTooltip')

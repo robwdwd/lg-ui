@@ -4,25 +4,13 @@
     <template #content>
       <UCard variant="subtle">
         <div class="grid grid-cols-2 gap-2 max-w-2xs">
-          <div v-if="ipinfo.asrank?.asnName" class="font-medium">AS Name</div>
-          <div v-if="ipinfo.asrank?.asnName" class="text-muted">{{ ipinfo.asrank.asnName }}</div>
-
-          <div v-if="ipinfo.asrank?.organization?.orgName" class="font-medium">Organisation</div>
-          <div v-if="ipinfo.asrank?.organization?.orgName" class="text-muted">{{ ipinfo.asrank.organization.orgName }}</div>
-
-          <div v-if="ipinfo.asrank?.country?.name" class="font-medium">AS Country</div>
-          <div v-if="ipinfo.asrank?.country?.name" class="text-muted">
-            <UIcon v-if="ipinfo.asrank?.country?.iso" :name="`i-flag-${ipinfo.asrank.country.iso.toLowerCase()}-4x3`" /> {{ ipinfo.asrank.country.name }}
-          </div>
-
-          <div v-if="ipinfo.asrank?.rank" class="font-medium">AS Rank</div>
-          <div v-if="ipinfo.asrank?.rank" class="text-muted">#{{ ipinfo.asrank.rank }}</div>
-
-          <div v-if="ipinfo.bgp_prefix" class="font-medium">BGP Prefix</div>
-          <div v-if="ipinfo.bgp_prefix" class="text-muted">{{ ipinfo.bgp_prefix }}</div>
-
-          <div v-if="ipinfo.registry" class="font-medium">Registry</div>
-          <div v-if="ipinfo.registry" class="text-muted">{{ registryUpper }}</div>
+          <template v-for="field in visibleFields" :key="field.label">
+            <div class="font-medium">{{ field.label }}</div>
+            <div class="text-muted">
+              <UIcon v-if="field.icon" :name="field.icon" class="me-1" />
+              {{ field.value }}
+            </div>
+          </template>
         </div>
       </UCard>
     </template>
@@ -30,11 +18,41 @@
 </template>
 
 <script setup lang="ts">
-import type { IPAddressInfo } from '~~/shared/types/tracerouteresult';
+import type { IPAddressInfo } from '~~/shared/types/tracerouteresult'
 
 const { ipinfo } = defineProps<{ ipinfo: IPAddressInfo }>()
 
-const registryUpper = computed(() =>
-  ipinfo.registry ? ipinfo.registry.toUpperCase() : ''
-)
+const visibleFields = computed(() => {
+  const fields = [
+    {
+      label: 'AS Name',
+      value: ipinfo.asrank?.asnName,
+    },
+    {
+      label: 'Organisation',
+      value: ipinfo.asrank?.organization?.orgName,
+    },
+    {
+      label: 'AS Country',
+      value: ipinfo.asrank?.country?.name,
+      icon: ipinfo.asrank?.country?.iso
+        ? `i-flag-${ipinfo.asrank.country.iso.toLowerCase()}-4x3`
+        : undefined,
+    },
+    {
+      label: 'AS Rank',
+      value: ipinfo.asrank?.rank ? `#${ipinfo.asrank.rank}` : undefined,
+    },
+    {
+      label: 'BGP Prefix',
+      value: ipinfo.bgp_prefix,
+    },
+    {
+      label: 'Registry',
+      value: ipinfo.registry?.toUpperCase(),
+    },
+  ]
+
+  return fields.filter(field => field.value)
+})
 </script>

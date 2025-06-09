@@ -5,21 +5,15 @@
       <UCard variant="subtle">
         <template #header>
           <div class="flex">
-            <div v-if="asInfo.country?.iso" class="me-3">
-              <UIcon :name="`i-flag-${asInfo.country?.iso?.toLowerCase()}-4x3`" />
-            </div>
+            <UIcon v-if="countryIso" :name="`i-flag-${countryIso}-4x3`" class="me-3" />
             <div>{{ displayName }}</div>
           </div>
         </template>
         <div class="grid grid-cols-2 gap-2 max-w-2xs">
-          <div v-if="asInfo.asnName" class="font-medium">AS Name</div>
-          <div v-if="asInfo.asnName" class="text-muted">{{ asInfo.asnName }}</div>
-
-          <div v-if="asInfo.country?.name" class="font-medium">Country</div>
-          <div v-if="asInfo.country?.name" class="text-muted">{{ asInfo.country?.name }}</div>
-
-          <div v-if="asInfo.rank" class="font-medium">AS Rank</div>
-          <div v-if="asInfo.rank" class="text-muted">#{{ asInfo.rank }}</div>
+          <template v-for="field in visibleFields" :key="field.label">
+            <div class="font-medium">{{ field.label }}</div>
+            <div class="text-muted">{{ field.value }}</div>
+          </template>
         </div>
       </UCard>
     </template>
@@ -34,4 +28,19 @@ const { asn, asInfo } = defineProps<{ asn: number, asInfo: ASNInfoEntry }>()
 const displayName = computed(() =>
   asInfo.organization?.orgName || asInfo.asnName || `AS${asn}`
 )
+
+const countryIso = computed(() =>
+  asInfo.country?.iso?.toLowerCase()
+)
+
+const visibleFields = computed(() => {
+  const fields = [
+    { label: 'AS Name', value: asInfo.asnName },
+    { label: 'Country', value: asInfo.country?.name },
+    { label: 'AS Rank', value: asInfo.rank ? `#${asInfo.rank}` : null }
+  ]
+
+  return fields.filter(field => field.value)
+})
+
 </script>

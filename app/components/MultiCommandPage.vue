@@ -1,0 +1,54 @@
+<template>
+  <UContainer>
+    <div class="flex flex-col lg:flex-row gap-10">
+      <div>
+        <MultiForm :max-destinations="maxDestinations" :max-locations="maxLocations" class="space-y-4" @submit="onSubmit" />
+      </div>
+
+      <div class="flex-auto">
+        <UProgress v-if="api_call_show_progress" v-model="api_call_progress" />
+
+        <div v-if="results">
+          <UTabs :items="tabItems" class="w-full">
+            <template v-for="location in results.locations" :key="location.name" #[location.name]>
+              <component :is="resultComponent" :results="location.results" />
+            </template>
+          </UTabs>
+        </div>
+      </div>
+    </div>
+  </UContainer>
+</template>
+
+<script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui';
+import { API_TIMEOUT_MULTICMD, CommandTypes } from '~~/constants';
+
+
+const { command, maxDestinations, maxLocations, resultComponent } = defineProps<{
+  command: CommandTypes;
+  maxDestinations: number;
+  maxLocations: number;
+  resultComponent: string;
+}>()
+
+const { api_call_progress, api_call_show_progress, fetchResults } = useApi();
+
+const tabItems = ref<TabsItem[]>([]);
+const results = ref<MultiBgpResult | MultiPingResult | null>(null);
+
+async function onSubmit(event: MultiEmitSchema) {
+  results.value = null;
+  tabItems.value = [];
+
+  const response = await fetchResults<MultiBgpResult | MultiPingResult>(
+    '/api/multi/',
+    { command: command, locations: event.locations, destinations: event.destinations, timeout: API_TIMEOUT_MULTICMD },
+  );
+
+  if (response) {
+    results.value = response;
+    tabItems.value = useMapLocationsToTabs(response.locations);
+  }
+}
+</script>

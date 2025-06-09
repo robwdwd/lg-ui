@@ -20,9 +20,9 @@ const emit = defineEmits<{
   submit: [MultiEmitSchema]
 }>()
 
-const { maxLocation, maxDestination } = defineProps<{
-  maxLocation: number,
-  maxDestination: number,
+const { maxLocations, maxDestinations } = defineProps<{
+  maxLocations: number,
+  maxDestinations: number,
 }>()
 
 const state = reactive<Partial<Schema>>({
@@ -33,7 +33,7 @@ const state = reactive<Partial<Schema>>({
 const schema = z.object({
   location: z.string()
     .array()
-    .max(maxLocation, { message: `A maximum of ${maxLocation} locations allowed` })
+    .max(maxLocations, { message: `A maximum of ${maxLocations} locations allowed` })
     .nonempty({ message: "Location is required" }),
 
   destination: z.string().nonempty({ message: "Destination is required" })
@@ -74,7 +74,7 @@ const validate = (state: any): FormError[] => {
     try {
       z.array(z.string().ip('IP address is not valid'))
         .min(1, { message: "At least one destination is required" })
-        .max(maxDestination, { message: `A maximum of ${maxDestination} destinations allowed` })
+        .max(maxDestinations, { message: `A maximum of ${maxDestinations} destinations allowed` })
         .parse(dests)
 
     } catch (error) {

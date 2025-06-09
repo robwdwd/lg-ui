@@ -1,13 +1,12 @@
-import { API_TIMEOUT_MULTICMD } from "~~/constants";
+import { MultiApiPostBody } from "~~/shared/types/misc";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
 
-  const body = await readBody<{ command: string; body: MultiEmitSchema }>(event);
-  const { command, body: requestBody } = body;
+  const { command: command, locations: locations, destinations: destinations, timeout: timeout }: MultiApiPostBody = await readBody(event);
 
   // Validate required fields
-  if (!command || !requestBody) {
+  if (!command || !locations || !destinations || !timeout) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid request body: Missing required fields',
@@ -17,17 +16,22 @@ export default defineEventHandler(async (event) => {
   try {
     const apiUrl = `${config.public.apiBase}multi/${command}`;
 
+    const body = {
+      locations,
+      destinations
+    };
+
     const response = await $fetch<MultiBgpResult | MultiPingResult>(apiUrl, {
       method: 'POST',
-      body: requestBody,
-      timeout: API_TIMEOUT_MULTICMD
+      body: body,
+      timeout: timeout
     });
 
     if (response?.errors?.length > 0) {
       console.error('API returned errors:', {
         message: response.errors,
         command,
-        requestBody,
+        body,
       });
       throw Error('API returned errors');
     }
@@ -38,7 +42,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching API data:', {
       message: error,
       command,
-      requestBody,
+      body,
     });
     throw createError({
       statusCode: 502,

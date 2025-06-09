@@ -6,7 +6,7 @@ export function useApi() {
   const api_call_progress = ref(null);
   const api_call_show_progress = ref(false);
 
-  async function fetchResults<T>(url: string, body: ApiPostBody): Promise<T | null> {
+  async function fetchResults<T>(url: string, body: ApiPostBody | MultiApiPostBody): Promise<T | null> {
     api_call_show_progress.value = true;
     toast.add(TOAST_MESSAGES.info);
 
