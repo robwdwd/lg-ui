@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue';
 import type { TabsItem } from '@nuxt/ui';
 import { API_TIMEOUT_MULTICMD, CommandTypes } from '~~/constants';
 
@@ -29,7 +30,7 @@ const { command, maxDestinations, maxLocations, resultComponent } = defineProps<
   command: CommandTypes;
   maxDestinations: number;
   maxLocations: number;
-  resultComponent: string;
+  resultComponent: Component;
 }>()
 
 const { api_call_progress, api_call_show_progress, fetchResults } = useApi();
