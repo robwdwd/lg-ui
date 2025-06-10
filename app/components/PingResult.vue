@@ -8,7 +8,8 @@
           </div>
         </div>
         <div>
-          <UModal v-if="showModal" fullscreen title="Ping results" description="Plain text output from the ping command.">
+          <UModal v-if="showModal" fullscreen title="Ping results"
+            description="Plain text output from the ping command.">
             <UTooltip text="View the plain text output.">
               <UButton icon="i-tabler-code" color="neutral" variant="ghost" class="float-right" />
             </UTooltip>

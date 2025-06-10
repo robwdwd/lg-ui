@@ -5,6 +5,7 @@
 <script setup lang="ts">
 
 import type { TableColumn } from '@nuxt/ui'
+import type { IPAddressInfo } from '~~/shared/types/tracerouteresult';
 
 const IpAddressInfoTooltip = resolveComponent('IpAddressInfoTooltip')
 
@@ -27,7 +28,7 @@ const columns: TableColumn<TracerouteHop>[] = [
     accessorKey: 'info',
     header: 'Origin ASN',
     cell: ({ row }) => {
-      const info = row.getValue('info')
+      const info: IPAddressInfo = row.getValue('info')
       return info?.asn ? h(IpAddressInfoTooltip, { ipinfo: info }) : ''
     },
   },

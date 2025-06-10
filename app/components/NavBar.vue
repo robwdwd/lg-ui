@@ -1,5 +1,6 @@
 <template>
-  <header class="bg-default/75 backdrop-blur border-b border-default h-(--ui-header-height) sticky top-0 z-50 mb-3 md:mb-8">
+  <header
+    class="bg-default/75 backdrop-blur border-b border-default h-(--ui-header-height) sticky top-0 z-50 mb-3 md:mb-8">
     <UContainer class="w-full flex items-center justify-between">
       <!-- Logo and Title -->
       <div class="justify-self-start flex items-center">
@@ -15,7 +16,7 @@
       <!-- Mobile Menu and Color Mode Button -->
       <div class="flex items-center justify-self-end gap-2">
         <ColorModeButton />
-        <UDropdownMenu :items="navLinks" class="md:hidden">
+        <UDropdownMenu :items="dropdownLinks" class="md:hidden">
           <UButton icon="i-tabler-menu" color="neutral" variant="ghost" class="block" />
         </UDropdownMenu>
       </div>
@@ -24,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
+import type { NavigationMenuItem, DropdownMenuItem } from '@nuxt/ui'
 
 // Access runtime config for the site title
 const config = useRuntimeConfig();
@@ -46,6 +47,28 @@ const navLinks: NavigationMenuItem[] = [
     label: 'Multi-BGP',
     icon: 'i-tabler-layout-list-filled',
     to: '/multibgp',
+  }
+];
+
+// Dropdown menu items for mobile (DropdownMenuItem type)
+const dropdownLinks: DropdownMenuItem[] = [
+  {
+    label: 'Home',
+    icon: 'i-tabler-home-filled',
+    to: '/',
+    type: 'link' as const
+  },
+  {
+    label: 'Multi-Ping',
+    icon: 'i-tabler-route-scan',
+    to: '/multiping',
+    type: 'link' as const
+  },
+  {
+    label: 'Multi-BGP',
+    icon: 'i-tabler-layout-list-filled',
+    to: '/multibgp',
+    type: 'link' as const
   }
 ];
 </script>

@@ -28,7 +28,7 @@ const columns: TableColumn<PingData>[] = [
         accessorKey: 'packet_loss',
         header: 'Loss %',
         cell: ({ row }) => {
-            const loss = row.getValue('packet_loss')
+            const loss = Number(row.getValue('packet_loss'))
             return h('span', { class: getPacketLossClass(loss) }, loss)
         },
     },

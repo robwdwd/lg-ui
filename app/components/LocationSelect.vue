@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 
-const model = defineModel();
+const model = defineModel<string | string[]>();
 
 defineProps<{
   multiple?: boolean,
@@ -17,7 +17,7 @@ defineProps<{
 //
 const transformLocations = (data: { code: string; name: string; locations: { name: string; code: string }[] }[]) => {
   return data.flatMap(region => [
-    { type: 'label', label: region.name },
+    { type: 'label' as const, label: region.name },
     ...region.locations.map(l => ({ label: l.name, value: l.code }))
   ]);
 };
