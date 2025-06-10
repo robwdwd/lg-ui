@@ -6,7 +6,8 @@
           <LocationSelect v-model="state.location" />
 
           <UFormField label="Command" name="command">
-            <USelect size="xl" v-model="state.command" :items="command_labels" placeholder="Select Command" class="w-full lg:w-72" />
+            <USelect size="xl" v-model="state.command" :items="command_labels" placeholder="Select Command"
+              class="w-full lg:w-72" />
           </UFormField>
 
           <UFormField label="Destination" name="destination" size="xl">
@@ -20,7 +21,7 @@
       </div>
 
       <div class="flex-auto">
-        <UProgress v-if="api_call_show_progress" v-model="api_call_progress" />
+        <UProgress v-if="showProgress" :v-model="null" />
         <div v-if="results">
           <component :is="getResultComponent(lgCommand)" :results="results" />
         </div>
@@ -34,7 +35,7 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { API_TIMEOUT, CommandTypes } from '~~/constants';
 
-const { api_call_progress, api_call_show_progress, fetchResults } = useApi();
+const { showProgress, fetchResults } = useApi();
 const results = ref<Result | null>(null);
 
 // Track the command seperatly from state of the form as if the user
@@ -61,7 +62,7 @@ const ipOrCidr = z.union([
 
 const schema = z.object({
   location: z.string({ message: 'Location is required' }),
-  command: z.string({ message: 'Command is required' }),
+  command: z.nativeEnum(CommandTypes, { message: 'Command is required' }),
   destination: ipOrCidr,
 }).refine(
   ({ command, destination }) =>
@@ -74,28 +75,30 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-const state = reactive<Partial<Schema>>({
+const state = reactive<{
+  location?: string;
+  command?: CommandTypes;
+  destination?: string;
+}>({
   location: undefined,
   command: undefined,
   destination: undefined,
 });
 
 function getResultComponent(command: CommandTypes | undefined) {
-  return command ? resultComponents[command] : null;
+  return command && resultComponents[command];
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   results.value = null;
-
-  const command = event.data.command as CommandTypes
-
-  lgCommand.value = command;
+  const { command, location, destination } = event.data;
+  lgCommand.value = command as CommandTypes;
 
   const response = await fetchResults<Result>('/api/run/', {
-    command: command,
-    location: event.data.location,
-    destination: event.data.destination,
-    timeout: API_TIMEOUT[command],
+    command: command as CommandTypes,
+    location,
+    destination,
+    timeout: API_TIMEOUT[command as CommandTypes],
   });
 
   if (response) {

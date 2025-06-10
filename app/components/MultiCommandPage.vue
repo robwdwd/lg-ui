@@ -2,11 +2,12 @@
   <UContainer>
     <div class="flex flex-col lg:flex-row gap-10">
       <div>
-        <MultiForm :max-destinations="maxDestinations" :max-locations="maxLocations" class="space-y-4" @submit="onSubmit" />
+        <MultiForm :max-destinations="maxDestinations" :max-locations="maxLocations" class="space-y-4"
+          @submit="onSubmit" />
       </div>
 
       <div class="flex-auto">
-        <UProgress v-if="api_call_show_progress" v-model="api_call_progress" />
+        <UProgress v-if="showProgress" :v-model="null" />
 
         <div v-if="results">
           <UTabs :items="tabItems" class="w-full">
@@ -30,10 +31,10 @@ const { command, maxDestinations, maxLocations, resultComponent } = defineProps<
   command: CommandTypes;
   maxDestinations: number;
   maxLocations: number;
-  resultComponent: Component;
+  resultComponent: Component | string;
 }>()
 
-const { api_call_progress, api_call_show_progress, fetchResults } = useApi();
+const { showProgress, fetchResults } = useApi();
 
 const tabItems = ref<TabsItem[]>([]);
 const results = ref<MultiBgpResult | MultiPingResult | null>(null);

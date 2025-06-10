@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
 
-  const { command: command, location: location, destination: destination, timeout: timeout }: ApiPostBody = await readBody(event);
+  const { command, location, destination, timeout }: ApiPostBody = await readBody(event);
 
   // Validate required fields
   if (!command || !location || !destination || !timeout) {
@@ -13,14 +13,14 @@ export default defineEventHandler(async (event) => {
 
   try {
     const apiUrl = `${config.public.apiBase}${command}/${location}/${destination}`;
-    return await $fetch(apiUrl, { timeout: timeout });
-  } catch (error) {
+    return await $fetch(apiUrl, { timeout });
+  } catch (error: any) {
     console.error('Error fetching API data:', {
-      error: error,
+      message: error?.message || error,
       command,
       location,
       destination,
-      timeout
+      timeout,
     });
     throw createError({
       statusCode: 502,

@@ -3,44 +3,47 @@ import { MultiApiPostBody } from "~~/shared/types/misc";
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
 
-  const { command: command, locations: locations, destinations: destinations, timeout: timeout }: MultiApiPostBody = await readBody(event);
+  const { command, locations, destinations, timeout }: MultiApiPostBody = await readBody(event);
 
-  // Validate required fields
-  if (!command || !locations || !destinations || !timeout) {
+  // Validate required fields and types
+  if (
+    !command ||
+    !Array.isArray(locations) ||
+    !Array.isArray(destinations) ||
+    !timeout
+  ) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Invalid request body: Missing required fields',
+      statusMessage: 'Invalid request body: Missing or invalid required fields',
     });
   }
 
+  const apiUrl = `${config.public.apiBase}multi/${command}`;
+  const body = { locations, destinations };
+
   try {
-    const apiUrl = `${config.public.apiBase}multi/${command}`;
-
-    const body = {
-      locations,
-      destinations
-    };
-
     const response = await $fetch<MultiBgpResult | MultiPingResult>(apiUrl, {
       method: 'POST',
-      body: body,
-      timeout: timeout
+      body,
+      timeout,
     });
 
-    if (response?.errors?.length > 0) {
+    if (response?.errors?.length) {
       console.error('API returned errors:', {
-        message: response.errors,
+        errors: response.errors,
         command,
         body,
       });
-      throw Error('API returned errors');
+      throw createError({
+        statusCode: 502,
+        statusMessage: 'API returned errors',
+      });
     }
 
-    return response
-
-  } catch (error) {
+    return response;
+  } catch (error: any) {
     console.error('Error fetching API data:', {
-      message: error,
+      message: error?.message || error,
       command,
       body,
     });

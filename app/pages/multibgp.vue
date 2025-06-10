@@ -1,6 +1,6 @@
 <template>
-  <MultiCommandPage :command="CommandTypes.BGP" :max-destinations="$config.public.maxDestBgp" :max-locations="$config.public.maxLocsBgp"
-    :result-component="bgpResult" />
+  <MultiCommandPage :command="CommandTypes.BGP" :max-destinations="$config.public.maxDestBgp"
+    :max-locations="$config.public.maxLocsBgp" :result-component="bgpResult" />
 </template>
 
 <script setup lang="ts">
