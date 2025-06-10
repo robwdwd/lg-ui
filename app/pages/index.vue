@@ -6,7 +6,7 @@
           <LocationSelect v-model="state.location" />
 
           <UFormField label="Command" name="command">
-            <USelect size="xl" v-model="state.command" :items="command_labels" placeholder="Select Command"
+            <USelect size="xl" v-model="state.command" :items="commandLabels" placeholder="Select Command"
               class="w-full lg:w-72" />
           </UFormField>
 
@@ -23,7 +23,7 @@
       <div class="flex-auto">
         <UProgress v-if="showProgress" :v-model="null" />
         <div v-if="results">
-          <component :is="getResultComponent(lgCommand)" :results="results" />
+          <component :is="getResultComponent" :results="results" />
         </div>
       </div>
     </div>
@@ -43,17 +43,21 @@ const results = ref<Result | null>(null);
 //
 const lgCommand = ref<CommandTypes | undefined>();
 
-const command_labels = [
+const commandLabels = [
   { label: 'BGP Route', value: CommandTypes.BGP },
   { label: 'Ping', value: CommandTypes.PING },
   { label: 'Traceroute', value: CommandTypes.TRACEROUTE },
 ];
 
-const resultComponents: Record<CommandTypes, any> = {
+const resultComponents = computed(() => ({
   [CommandTypes.BGP]: resolveComponent('BgpResult'),
   [CommandTypes.PING]: resolveComponent('PingResult'),
   [CommandTypes.TRACEROUTE]: resolveComponent('TracerouteResult'),
-};
+}));
+
+const getResultComponent = computed(() =>
+  lgCommand.value ? resultComponents.value[lgCommand.value] : undefined
+)
 
 const ipOrCidr = z.union([
   z.string().cidr({ message: 'Invalid CIDR or IP address' }),
@@ -75,19 +79,11 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-const state = reactive<{
-  location?: string;
-  command?: CommandTypes;
-  destination?: string;
-}>({
+const state = reactive<Partial<Schema>>({
   location: undefined,
   command: undefined,
   destination: undefined,
-});
-
-function getResultComponent(command: CommandTypes | undefined) {
-  return command && resultComponents[command];
-}
+})
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   results.value = null;

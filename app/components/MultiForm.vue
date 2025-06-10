@@ -25,6 +25,8 @@ const { maxLocations, maxDestinations } = defineProps<{
   maxDestinations: number,
 }>()
 
+type Schema = z.output<typeof schema>
+
 const state = reactive<Partial<Schema>>({
   location: undefined,
   destination: undefined
@@ -38,9 +40,6 @@ const schema = z.object({
 
   destination: z.string().nonempty({ message: "Destination is required" })
 })
-
-type Schema = z.output<typeof schema>
-
 
 // Utility function to parse and clean destination input
 const parseDestinations = (destination: string): string[] =>
@@ -67,24 +66,20 @@ const processZodErrors = (error: z.ZodError): FormError[] => {
 // Custom validation
 //
 const validate = (state: any): FormError[] => {
-  const foundErrors: FormError[] = []
 
-  if (state.destination) {
-    const dests = parseDestinations(state.destination)
-    try {
-      z.array(z.string().ip('IP address is not valid'))
-        .min(1, { message: "At least one destination is required" })
-        .max(maxDestinations, { message: `A maximum of ${maxDestinations} destinations allowed` })
-        .parse(dests)
+  if (!state.destination) return []
 
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        foundErrors.push(...processZodErrors(error))
-      }
-    }
+  const dests = parseDestinations(state.destination)
+  try {
+    z.array(z.string().ip('IP address is not valid'))
+      .min(1, { message: "At least one destination is required" })
+      .max(maxDestinations, { message: `A maximum of ${maxDestinations} destinations allowed` })
+      .parse(dests)
+
+    return []
+  } catch (error) {
+    return error instanceof z.ZodError ? processZodErrors(error) : []
   }
-
-  return foundErrors
 }
 
 // Handle form submission
