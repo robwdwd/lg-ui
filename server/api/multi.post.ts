@@ -46,10 +46,12 @@ export default defineEventHandler(async (event) => {
         timeout,
         serverId: serverId
       });
+      if (!response?.locations?.length) {
       throw createError({
         statusCode: 502,
-        statusMessage: 'API returned errors',
+        statusMessage: 'API returned errors and no results',
       });
+      }
     }
 
     return response;
