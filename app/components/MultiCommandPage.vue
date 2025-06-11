@@ -66,15 +66,19 @@ async function onSubmit(event: MultiEmitSchema) {
       )
     );
 
-    // Log failed servers
+    // Log failed servers and show toast
+    const failedCount = settledResults.filter(result => result.status === 'rejected').length;
+
     settledResults.forEach((result, index) => {
-      const [server_id] = Object.entries(locationsByServer)[index];
       if (result.status === 'rejected') {
-        console.error(`Server ${server_id} failed:`, result.reason);
-      } else {
-        console.log(`Server ${server_id} succeeded`);
+        console.error('One of the requests failed:', result.reason);
       }
     });
+
+    // Show toast if some servers failed
+    if (failedCount > 0) {
+      toast.add(TOAST_MESSAGES.partial);
+    }
 
     // Filter successful responses
     const responses = settledResults
@@ -100,6 +104,7 @@ async function onSubmit(event: MultiEmitSchema) {
     } else {
       // All servers failed
       toast.add(TOAST_MESSAGES.error);
+      results.value = null;
     }
   } catch (error) {
     toast.add(TOAST_MESSAGES.error);

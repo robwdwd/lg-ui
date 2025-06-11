@@ -22,6 +22,11 @@ export const TOAST_MESSAGES = {
     description: 'Request sent, please wait for results.',
     color: 'info',
   } as Partial<Toast>,
+  partial: {
+    title: 'Warning',
+    description: 'Some locations failed. Showing partial results.',
+    color: 'warning',
+  } as Partial<Toast>,
   error: {
     title: 'Error',
     description: 'An error occurred while processing your request.',
