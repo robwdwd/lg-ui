@@ -47,14 +47,11 @@ async function onSubmit(event: MultiEmitSchema) {
   showProgress.value = true;
 
   try {
-
     // Group locations by serverId, pushing only loc.value
     const locationsByServer = event.locations.reduce<Record<string, string[]>>((acc, loc) => {
       (acc[loc.server_id] ??= []).push(loc.value);
       return acc;
     }, {});
-
-    console.log('LocationsByServer:', locationsByServer)
 
     // Fetch results for each serverId with individual error handling
     const settledResults = await Promise.allSettled(

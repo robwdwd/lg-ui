@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   // Get the correct API base URL from lgApiServers using serverId
   const apiBase = config.lgApiServers?.[serverId];
-  console.log('ApiBase:', apiBase)
+
   if (!apiBase) {
     throw createError({
       statusCode: 400,
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const apiUrl = `${apiBase}${command}/${location}/${destination}`;
-    console.log('Single API URL:', apiUrl)
+
     return await $fetch(apiUrl, { timeout });
   } catch (error: any) {
     console.error('Error fetching API data:', {

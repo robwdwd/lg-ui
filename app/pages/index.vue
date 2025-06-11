@@ -95,9 +95,9 @@ const state = reactive<Partial<Schema>>({
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   results.value = null;
+  showProgress.value = true;
   
   try {
-    showProgress.value = true;
     const { command, location, destination } = event.data;
     lgCommand.value = command as CommandTypes;
 

@@ -44,13 +44,13 @@ export default defineEventHandler(async (event) => {
         command,
         body,
         timeout,
-        serverId: serverId
+        serverId
       });
-      if (!response?.locations?.length) {
-      throw createError({
-        statusCode: 502,
-        statusMessage: 'API returned errors and no results',
-      });
+      if (!response.locations?.length) {
+        throw createError({
+          statusCode: 502,
+          statusMessage: 'API returned errors and no results',
+        });
       }
     }
 
@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
       command,
       body,
       timeout,
-      serverId: serverId
+      serverId
     });
     throw createError({
       statusCode: 502,

@@ -1,9 +1,5 @@
-import util from 'util';
-
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
-
-  console.log(util.inspect(config.lgApiServers, { depth: null, colors: true }));
 
   // Get the array of server URLs from the object values
   const apiServers = Object.values(config.lgApiServers) as string[];
@@ -12,56 +8,47 @@ export default defineEventHandler(async (event) => {
     const results = await Promise.all(
       apiServers.map(async (base: string) => {
         try {
-          const regions = await $fetch<ApiRegions[]>(`${base}locations/regional`);
-          return regions;
+          return await $fetch<ApiRegions[]>(`${base}locations/regional`);
         } catch {
           return [];
         }
       })
     );
 
-    // Flatten and merge regions with the same name
+    // Merge regions by name and check for duplicates
     const regionMap = new Map<string, ApiRegions>();
 
-    results.flat().forEach((region: ApiRegions) => {
-      if (regionMap.has(region.name)) {
-        // Merge locations from regions with the same name
-        const existingRegion = regionMap.get(region.name)!;
+    for (const region of results.flat()) {
+      const existingRegion = regionMap.get(region.name);
+      if (existingRegion) {
+        // Check for duplicate codes and names
+        const existingCodes = new Set(existingRegion.locations.map((loc) => loc.code));
+        const existingNames = new Set(existingRegion.locations.map((loc) => loc.name));
 
-        // Check for duplicate location codes
-        const existingCodes = new Set(existingRegion.locations.map((loc: ApiLocation) => loc.code));
-        const duplicateCodes = region.locations.filter((loc: ApiLocation) => existingCodes.has(loc.code));
-
-        // Check for duplicate location names
-        const existingNames = new Set(existingRegion.locations.map((loc: ApiLocation) => loc.name));
-        const duplicateNames = region.locations.filter((loc: ApiLocation) => existingNames.has(loc.name));
-
-        if (duplicateCodes.length > 0) {
-          const duplicateCodesList = duplicateCodes.map((loc: ApiLocation) => loc.code).join(', ');
+        const duplicateCodes = region.locations.filter((loc) => existingCodes.has(loc.code));
+        if (duplicateCodes.length) {
           throw createError({
             statusCode: 409,
-            statusMessage: `Duplicate location codes found in region "${region.name}": ${duplicateCodesList}`,
+            statusMessage: `Duplicate location codes found in region "${region.name}": ${duplicateCodes.map((loc) => loc.code).join(', ')}`,
           });
         }
 
-        if (duplicateNames.length > 0) {
-          const duplicateNamesList = duplicateNames.map((loc: ApiLocation) => loc.name).join(', ');
+        const duplicateNames = region.locations.filter((loc) => existingNames.has(loc.name));
+        if (duplicateNames.length) {
           throw createError({
             statusCode: 409,
-            statusMessage: `Duplicate location names found in region "${region.name}": ${duplicateNamesList}`,
+            statusMessage: `Duplicate location names found in region "${region.name}": ${duplicateNames.map((loc) => loc.name).join(', ')}`,
           });
         }
 
-        existingRegion.locations = [...existingRegion.locations, ...region.locations];
+        existingRegion.locations.push(...region.locations);
       } else {
-        // Create a copy to avoid mutations
+        // Clone to avoid mutation
         regionMap.set(region.name, { ...region, locations: [...region.locations] });
       }
-    });
+    }
 
-    const locations = Array.from(regionMap.values());
-    console.log(util.inspect(locations, { depth: null, colors: true }));
-    return locations;
+    return Array.from(regionMap.values());
   } catch (error) {
     console.error('Error fetching locations:', error);
     throw createError({
