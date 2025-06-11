@@ -3,14 +3,15 @@ import { MultiApiPostBody } from "~~/shared/types/misc";
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
 
-  const { command, locations, destinations, timeout }: MultiApiPostBody = await readBody(event);
+  const { command, locations, destinations, timeout, serverId }: MultiApiPostBody = await readBody(event);
 
   // Validate required fields and types
   if (
     !command ||
     !Array.isArray(locations) ||
     !Array.isArray(destinations) ||
-    !timeout
+    !timeout ||
+    !serverId
   ) {
     throw createError({
       statusCode: 400,
@@ -18,7 +19,16 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const apiUrl = `${config.public.apiBase}multi/${command}`;
+  // Get the correct API base URL from lgApiServers using serverId
+  const apiBase = config.lgApiServers?.[serverId];
+  if (!apiBase) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Invalid serverId: ${serverId}`,
+    });
+  }
+
+  const apiUrl = `${apiBase}multi/${command}`;
   const body = { locations, destinations };
 
   try {
@@ -33,6 +43,8 @@ export default defineEventHandler(async (event) => {
         errors: response.errors,
         command,
         body,
+        timeout,
+        serverId: serverId
       });
       throw createError({
         statusCode: 502,
@@ -46,6 +58,8 @@ export default defineEventHandler(async (event) => {
       message: error?.message || error,
       command,
       body,
+      timeout,
+      serverId: serverId
     });
     throw createError({
       statusCode: 502,

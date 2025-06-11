@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormError, FormSubmitEvent } from '@nuxt/ui'
+import type { LocationSelect } from '~~/shared/types/locations'
 
 const emit = defineEmits<{
   submit: [MultiEmitSchema]
@@ -33,8 +34,14 @@ const state = reactive<Partial<Schema>>({
 })
 
 const schema = z.object({
-  location: z.string()
-    .array()
+  location: z.array(
+    z.object({
+      value: z.string(),
+      label: z.string(),
+      server_id: z.string(),
+      icon: z.string(),
+    })
+  )
     .max(maxLocations, { message: `A maximum of ${maxLocations} locations allowed` })
     .nonempty({ message: "Location is required" }),
 

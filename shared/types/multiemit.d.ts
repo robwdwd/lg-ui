@@ -1,4 +1,6 @@
+
+
 export interface MultiEmitSchema {
-    locations: string[];
+    locations: LocationSelect[];
     destinations: string[];
 }

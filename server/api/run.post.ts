@@ -1,18 +1,30 @@
 export default defineEventHandler(async (event) => {
+
   const config = useRuntimeConfig(event);
 
-  const { command, location, destination, timeout }: ApiPostBody = await readBody(event);
+  const { command, location, destination, timeout, serverId }: ApiPostBody = await readBody(event);
 
   // Validate required fields
-  if (!command || !location || !destination || !timeout) {
+  if (!command || !location || !destination || !timeout || !serverId) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid request body: Missing required fields',
     });
   }
 
+  // Get the correct API base URL from lgApiServers using serverId
+  const apiBase = config.lgApiServers?.[serverId];
+  console.log('ApiBase:', apiBase)
+  if (!apiBase) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Invalid serverId: ${serverId}`,
+    });
+  }
+
   try {
-    const apiUrl = `${config.public.apiBase}${command}/${location}/${destination}`;
+    const apiUrl = `${apiBase}${command}/${location}/${destination}`;
+    console.log('Single API URL:', apiUrl)
     return await $fetch(apiUrl, { timeout });
   } catch (error: any) {
     console.error('Error fetching API data:', {
@@ -20,6 +32,7 @@ export default defineEventHandler(async (event) => {
       command,
       location,
       destination,
+      serverId,
       timeout,
     });
     throw createError({

@@ -27,12 +27,11 @@
 <script setup lang="ts">
 import type { NavigationMenuItem, DropdownMenuItem } from '@nuxt/ui'
 
-// Access runtime config for the site title
 const config = useRuntimeConfig();
 const title = config.public.siteTitle;
 
-// Static navigation links
-const navLinks: NavigationMenuItem[] = [
+// Base navigation links
+const baseLinks = [
   {
     label: 'Home',
     icon: 'i-tabler-home-filled',
@@ -40,35 +39,22 @@ const navLinks: NavigationMenuItem[] = [
   },
   {
     label: 'Multi-Ping',
-    icon: 'i-tabler-route-scan',
+    icon: 'i-tabler-radar',
     to: '/multiping',
   },
   {
     label: 'Multi-BGP',
-    icon: 'i-tabler-layout-list-filled',
+    icon: 'i-tabler-route-scan',
     to: '/multibgp',
   }
 ];
 
-// Dropdown menu items for mobile (DropdownMenuItem type)
-const dropdownLinks: DropdownMenuItem[] = [
-  {
-    label: 'Home',
-    icon: 'i-tabler-home-filled',
-    to: '/',
-    type: 'link' as const
-  },
-  {
-    label: 'Multi-Ping',
-    icon: 'i-tabler-route-scan',
-    to: '/multiping',
-    type: 'link' as const
-  },
-  {
-    label: 'Multi-BGP',
-    icon: 'i-tabler-layout-list-filled',
-    to: '/multibgp',
-    type: 'link' as const
-  }
-];
+// For desktop navigation
+const navLinks: NavigationMenuItem[] = baseLinks;
+
+// For mobile dropdown, add type: 'link'
+const dropdownLinks: DropdownMenuItem[] = baseLinks.map(link => ({
+  ...link,
+  type: 'link' as const,
+}));
 </script>

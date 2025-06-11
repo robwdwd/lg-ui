@@ -2,7 +2,7 @@
   <UContainer>
     <div class="flex flex-col lg:flex-row gap-10">
       <div>
-        <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+        <UForm :state="state" class="space-y-4" @submit="onSubmit">
           <LocationSelect v-model="state.location" />
 
           <UFormField label="Command" name="command">
@@ -33,9 +33,12 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui';
-import { API_TIMEOUT, CommandTypes } from '~~/constants';
+import { API_TIMEOUT, CommandTypes, TOAST_MESSAGES } from '~~/constants';
 
-const { showProgress, fetchResults } = useApi();
+const toast = useToast();
+const showProgress = ref(false);
+
+const { fetchResults } = useApi();
 const results = ref<Result | null>(null);
 
 // Track the command seperatly from state of the form as if the user
@@ -65,7 +68,12 @@ const ipOrCidr = z.union([
 ]);
 
 const schema = z.object({
-  location: z.string({ message: 'Location is required' }),
+  location: z.object({
+    value: z.string(),
+    label: z.string(),
+    server_id: z.string(),
+    icon: z.string(),
+  }, { required_error: 'Location is required' }),
   command: z.nativeEnum(CommandTypes, { message: 'Command is required' }),
   destination: ipOrCidr,
 }).refine(
@@ -87,18 +95,28 @@ const state = reactive<Partial<Schema>>({
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   results.value = null;
-  const { command, location, destination } = event.data;
-  lgCommand.value = command as CommandTypes;
+  
+  try {
+    showProgress.value = true;
+    const { command, location, destination } = event.data;
+    lgCommand.value = command as CommandTypes;
 
-  const response = await fetchResults<Result>('/api/run/', {
-    command: command as CommandTypes,
-    location,
-    destination,
-    timeout: API_TIMEOUT[command as CommandTypes],
-  });
+    const response = await fetchResults<Result>('/api/run/', {
+      command: command as CommandTypes,
+      location: location.value,
+      destination,
+      serverId: location.server_id,
+      timeout: API_TIMEOUT[command as CommandTypes],
+    });
 
-  if (response) {
-    results.value = response;
+    if (response) {
+      results.value = response;
+    }
+  } catch (error) {
+    toast.add(TOAST_MESSAGES.error);
+    results.value = null;
+  } finally {
+    showProgress.value = false;
   }
 }
 </script>

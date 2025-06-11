@@ -1,27 +1,24 @@
 import { TOAST_MESSAGES } from '~~/constants';
 
 export function useApi() {
-  const toast = useToast();
-  const showProgress = ref(false);
+
 
   async function fetchResults<T>(url: string, body: ApiPostBody | MultiApiPostBody): Promise<T | null> {
-    showProgress.value = true;
-    toast.add(TOAST_MESSAGES.info);
+
+    console.log('Body FetchResult:', body)
 
     try {
-      return await $fetch<T>(url, {
+      const result = await $fetch<T>(url, {
         method: 'POST',
         body,
         timeout: body.timeout,
       });
+      return result as T;
     } catch (error) {
-      toast.add(TOAST_MESSAGES.error);
       console.error('API call error:', error);
-      return null;
-    } finally {
-      showProgress.value = false;
-    }
+      throw error;
+    } 
   }
 
-  return { showProgress, fetchResults };
+  return { fetchResults };
 }
