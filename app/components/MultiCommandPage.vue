@@ -39,7 +39,7 @@ const { command, maxDestinations, maxLocations, resultComponent } = defineProps<
 const { fetchResults } = useApi();
 
 const tabItems = ref<TabsItem[]>([]);
-const results = ref<MultiBgpResult | MultiPingResult | null>(null);
+const results = ref<MultiResult | null>(null);
 
 async function onSubmit(event: MultiEmitSchema) {
   results.value = null;
@@ -56,17 +56,34 @@ async function onSubmit(event: MultiEmitSchema) {
 
     console.log('LocationsByServer:', locationsByServer)
 
-    // Fetch results for each serverId
-    const responses = (await Promise.all(
+    // Fetch results for each serverId with individual error handling
+    const settledResults = await Promise.allSettled(
       Object.entries(locationsByServer).map(([server_id, locations]) =>
-        fetchResults<MultiBgpResult | MultiPingResult>(
+        fetchResults<MultiResult>(
           '/api/multi/',
           { command, locations, destinations: event.destinations, serverId: server_id, timeout: API_TIMEOUT_MULTICMD }
         )
       )
-    )).filter((res): res is MultiResult => !!res);
+    );
 
-    // Merge results
+    // Log failed servers
+    settledResults.forEach((result, index) => {
+      const [server_id] = Object.entries(locationsByServer)[index];
+      if (result.status === 'rejected') {
+        console.error(`Server ${server_id} failed:`, result.reason);
+      } else {
+        console.log(`Server ${server_id} succeeded`);
+      }
+    });
+
+    // Filter successful responses
+    const responses = settledResults
+      .filter((result): result is PromiseFulfilledResult<MultiResult> =>
+        result.status === 'fulfilled' && !!result.value
+      )
+      .map(result => result.value);
+
+    // Merge results from successful responses
     const mergedLocations = responses.flatMap(res => res.locations ?? []);
     const mergedErrors = responses.flatMap(res => res.errors ?? []);
 
@@ -80,6 +97,9 @@ async function onSubmit(event: MultiEmitSchema) {
       if (mergedLocations.length) {
         tabItems.value = useMapLocationsToTabs(mergedLocations);
       }
+    } else {
+      // All servers failed
+      toast.add(TOAST_MESSAGES.error);
     }
   } catch (error) {
     toast.add(TOAST_MESSAGES.error);
