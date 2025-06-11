@@ -44,10 +44,10 @@ const results = ref<MultiResult | null>(null);
 async function onSubmit(event: MultiEmitSchema) {
   results.value = null;
   tabItems.value = [];
-  console.log('MutltiEventSubmit:', event.locations);
+  showProgress.value = true;
 
   try {
-    showProgress.value = true;
+
     // Group locations by serverId, pushing only loc.value
     const locationsByServer = event.locations.reduce<Record<string, string[]>>((acc, loc) => {
       (acc[loc.server_id] ??= []).push(loc.value);
@@ -66,19 +66,16 @@ async function onSubmit(event: MultiEmitSchema) {
       )
     );
 
-    // Log failed servers and show toast
-    const failedCount = settledResults.filter(result => result.status === 'rejected').length;
-
-    settledResults.forEach((result, index) => {
+    // Log failed requests
+    let failedCount = 0;
+    settledResults.forEach(result => {
       if (result.status === 'rejected') {
+        failedCount++;
         console.error('One of the requests failed:', result.reason);
       }
     });
 
-    // Show toast if some servers failed
-    if (failedCount > 0) {
-      toast.add(TOAST_MESSAGES.partial);
-    }
+    const totalCount = settledResults.length;
 
     // Filter successful responses
     const responses = settledResults
@@ -91,21 +88,28 @@ async function onSubmit(event: MultiEmitSchema) {
     const mergedLocations = responses.flatMap(res => res.locations ?? []);
     const mergedErrors = responses.flatMap(res => res.errors ?? []);
 
-    if (responses.length) {
-      results.value = {
-        ...responses[0],
-        locations: mergedLocations,
-        errors: mergedErrors,
-        raw_only: responses[0].raw_only ?? false,
-      };
-      if (mergedLocations.length) {
-        tabItems.value = useMapLocationsToTabs(mergedLocations);
-      }
-    } else {
-      // All servers failed
+    if (!responses.length) {
       toast.add(TOAST_MESSAGES.error);
       results.value = null;
+      return;
     }
+
+
+    results.value = {
+      ...responses[0],
+      locations: mergedLocations,
+      errors: mergedErrors,
+      raw_only: responses[0].raw_only ?? false,
+    };
+    if (mergedLocations.length) {
+      tabItems.value = useMapLocationsToTabs(mergedLocations);
+    }
+
+    // Show partial toast if some servers failed or there are errors in the responses
+    if ((failedCount > 0 && failedCount < totalCount) || mergedErrors.length > 0) {
+      toast.add(TOAST_MESSAGES.partial);
+    }
+
   } catch (error) {
     toast.add(TOAST_MESSAGES.error);
     results.value = null;
