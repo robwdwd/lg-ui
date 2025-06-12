@@ -2,7 +2,7 @@
   <UContainer>
     <div class="flex flex-col lg:flex-row gap-10">
       <div>
-        <UForm :state="state" class="space-y-4" @submit="onSubmit">
+        <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
           <LocationSelect v-model="state.location" />
 
           <UFormField label="Command" name="command">
@@ -10,8 +10,8 @@
               class="w-full lg:w-72" />
           </UFormField>
 
-          <UFormField label="Destination" name="destination" size="xl">
-            <UInput v-model="state.destination" class="w-full lg:w-72" />
+          <UFormField label="Destination" name="destination">
+            <UInput v-model="state.destination" size="xl" placeholder="Enter a destination" class="w-full lg:w-72" />
           </UFormField>
 
           <UButton size="xl" type="submit" class="block w-full lg:w-72">
@@ -96,7 +96,7 @@ const state = reactive<Partial<Schema>>({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   results.value = null;
   showProgress.value = true;
-  
+
   try {
     const { command, location, destination } = event.data;
     lgCommand.value = command as CommandTypes;

@@ -2,12 +2,12 @@
   <UFormField label="Location" name="location">
     <UInputMenu size="xl" v-model="model" :items="locations" :multiple="multiple"
       :loading="locationStatus !== 'success'" :disabled="locationStatus !== 'success'" :placeholder="placeholder"
-      icon="i-lucide-map" class="w-full lg:w-72" />
+      class="w-full lg:w-72" />
   </UFormField>
 </template>
 
 <script setup lang="ts">
-import type { LocationSelect } from '~~/shared/types/locations';
+import type { ApiRegions, LocationSelect } from '~~/shared/types/locations';
 
 
 const model = defineModel<LocationSelect | LocationSelect[]>()
@@ -24,14 +24,14 @@ const placeholder = computed(() =>
 
 // Get location data for the location select.
 //
-const transformLocations = (data: { code: string; name: string; locations: { name: string; code: string; server_id: string, country: string, country_iso: string }[] }[]) => {
+const transformLocations = (data: ApiRegions[]) => {
   return data.flatMap(region => [
     { type: 'label' as const, label: region.name, value: undefined },
-    ...region.locations.map(l => ({
-      label: l.name,
-      value: l.code,
-      server_id: l.server_id,
-      icon: `i-flag-${l.country_iso.toLowerCase()}-4x3`
+    ...region.locations.map(loc => ({
+      label: `${loc.name} (${loc.country})`,
+      value: loc.code,
+      server_id: loc.server_id,
+      icon: `i-flag-${loc.country_iso.toLowerCase()}-4x3`
     }))
   ]);
 };
