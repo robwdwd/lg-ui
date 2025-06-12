@@ -1,6 +1,6 @@
 <template>
   <UFormField label="Location" name="location">
-    <UInputMenu size="xl" v-model="model" :items="locations" :multiple="multiple"
+    <UInputMenu v-model="model" :items="locations" :multiple="multiple"
       :loading="locationStatus !== 'success'" :disabled="locationStatus !== 'success'" :placeholder="placeholder"
       class="w-full lg:w-72" />
   </UFormField>

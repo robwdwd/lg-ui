@@ -3,10 +3,10 @@
     <LocationSelect v-model="state.location" multiple />
 
     <UFormField label="Destinations" name="destination">
-      <UTextarea size="xl" v-model="state.destination" placeholder="Enter the destinations" class="w-full lg:w-72" />
+      <UTextarea v-model="state.destination" placeholder="Enter the destinations" class="w-full lg:w-72" />
     </UFormField>
 
-    <UButton size="xl" type="submit" class="block w-full lg:w-72">
+    <UButton type="submit" class="block w-full lg:w-72">
       Submit
     </UButton>
   </UForm>

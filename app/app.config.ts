@@ -2,7 +2,7 @@ export default defineAppConfig({
   title: 'Network Looking Glass',
   ui: {
     colors: {
-      primary: 'cyan',
+      primary: 'indigo',
       neutral: 'zinc',
     },
     button: {

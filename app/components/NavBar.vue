@@ -4,7 +4,7 @@
     <UContainer class="w-full flex items-center justify-between">
       <!-- Logo and Title -->
       <div class="justify-self-start flex items-center">
-        <UIcon name="i-tabler-spy" class="size-10 me-3" />
+        <LgLogo class="size-10 me-3" />
         <div class="text-lg font-medium">{{ title }}</div>
       </div>
 
