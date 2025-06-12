@@ -1,7 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   runtimeConfig: {
-    lgApiServers: process.env.NUXT_LG_API_SERVERS,
+    lgApiServers: process.env.NUXT_LG_API_SERVERS
+      ? JSON.parse(process.env.NUXT_LG_API_SERVERS)
+      : {},
     public: {
       siteTitle: process.env.NUXT_PUBLIC_SITE_TITLE || 'Network Looking Glass',
       maxLocsPing: Number(process.env.NUXT_PUBLIC_MAX_LOCS_PING) || 3,
