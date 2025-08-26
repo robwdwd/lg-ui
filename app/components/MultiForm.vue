@@ -29,7 +29,7 @@ const { maxLocations, maxDestinations } = defineProps<{
 type Schema = z.output<typeof schema>
 
 const state = reactive<Partial<Schema>>({
-  location: undefined,
+  location: [],
   destination: undefined
 })
 
@@ -42,10 +42,10 @@ const schema = z.object({
       icon: z.string(),
     })
   )
-    .max(maxLocations, { message: `A maximum of ${maxLocations} locations allowed` })
-    .nonempty({ message: "Location is required" }),
+    .max(maxLocations, { error: `A maximum of ${maxLocations} locations allowed` })
+    .nonempty({ error: "Location is required" }),
 
-  destination: z.string().nonempty({ message: "Destination is required" })
+  destination: z.string().nonempty({ error: "Destination is required" })
 })
 
 // Utility function to parse and clean destination input
@@ -55,7 +55,8 @@ const parseDestinations = (destination: string): string[] =>
 // Helper function to process Zod errors
 const processZodErrors = (error: z.ZodError): FormError[] => {
   const formErrors: FormError[] = []
-  const flattenedErrors = error.flatten()
+
+  const flattenedErrors = z.flattenError(error);
 
   flattenedErrors.formErrors.forEach(msg => {
     formErrors.push({ name: 'destination', message: msg })
@@ -76,11 +77,17 @@ const validate = (state: any): FormError[] => {
 
   if (!state.destination) return []
 
+  const ipAddress = z.union([
+    z.ipv4({ error: 'Invalid CIDR or IP address' }),
+    z.ipv6({ error: 'Invalid CIDR or IP address' }),
+  ], { error: 'Invalid CIDR or IP Address.' });
+
+
   const dests = parseDestinations(state.destination)
   try {
-    z.array(z.string().ip('IP address is not valid'))
-      .min(1, { message: "At least one destination is required" })
-      .max(maxDestinations, { message: `A maximum of ${maxDestinations} destinations allowed` })
+    z.array(ipAddress)
+      .min(1, { error: "At least one destination is required" })
+      .max(maxDestinations, { error: `A maximum of ${maxDestinations} destinations allowed` })
       .parse(dests)
 
     return []

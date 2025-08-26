@@ -63,9 +63,11 @@ const getResultComponent = computed(() =>
 )
 
 const ipOrCidr = z.union([
-  z.string().cidr({ message: 'Invalid CIDR or IP address' }),
-  z.string().ip({ message: 'Invalid CIDR or IP address' }),
-]);
+  z.cidrv4({ error: 'Invalid CIDR or IP address' }),
+  z.ipv4({ error: 'Invalid CIDR or IP address' }),
+  z.cidrv6({ error: 'Invalid CIDR or IP address' }),
+  z.ipv6({ error: 'Invalid CIDR or IP address' }),
+], {error: 'Invalid CIDR or IP address.'});
 
 const schema = z.object({
   location: z.object({
@@ -73,14 +75,14 @@ const schema = z.object({
     label: z.string(),
     server_id: z.string(),
     icon: z.string(),
-  }, { required_error: 'Location is required' }),
-  command: z.nativeEnum(CommandTypes, { message: 'Command is required' }),
+  }, { error: 'Location is required' }),
+  command: z.enum(CommandTypes, { error: 'Command is required' }),
   destination: ipOrCidr,
 }).refine(
   ({ command, destination }) =>
     command === CommandTypes.BGP || !destination.includes('/'),
   {
-    message: 'Destination cannot be a CIDR for ping or traceroute.',
+    error: 'Destination cannot be a CIDR for ping or traceroute.',
     path: ['destination'],
   }
 );
