@@ -10,7 +10,7 @@ const { results } = defineProps<{ results: BgpPath[] }>()
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UTooltip = resolveComponent('UTooltip')
-const UButtonGroup = resolveComponent('UButtonGroup')
+const UFieldGroup = resolveComponent('UFieldGroup')
 
 const columns: TableColumn<BgpPath>[] = [
   {
@@ -21,7 +21,7 @@ const columns: TableColumn<BgpPath>[] = [
       const isBestPath = row.getValue('best_path')
       if (isBestPath) {
         return h(
-          UButtonGroup,
+          UFieldGroup,
           { variant: 'subtle', color: 'success' },
           () => [
             h(UButton, { variant: 'outline', color: 'success' }, () => String(pathId)),
