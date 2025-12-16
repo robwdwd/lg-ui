@@ -15,19 +15,19 @@
   "dependencies": {
     "@dagrejs/dagre": "^1.1.8",
     "@nuxt/fonts": "^0.12.1",
-    "@nuxt/icon": "^2.1.0",
+    "@nuxt/icon": "^2.1.1",
     "@nuxt/ui": "^4.2.1",
     "@vue-flow/core": "^1.48.0",
-    "nuxt": "^4.2.1",
-    "zod": "^4.1.13"
+    "nuxt": "^4.2.2",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@iconify-json/flag": "^1.2.10",
-    "@iconify-json/lucide": "^1.2.76",
-    "@iconify-json/simple-icons": "^1.2.60",
+    "@iconify-json/lucide": "^1.2.81",
+    "@iconify-json/simple-icons": "^1.2.63",
     "@iconify-json/tabler": "^1.2.23",
-    "@nuxt/eslint": "^1.11.0",
-    "eslint": "^9.39.1",
+    "@nuxt/eslint": "^1.12.1",
+    "eslint": "^9.39.2",
     "typescript": "^5.9.3"
   },
   "trustedDependencies": [
